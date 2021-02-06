@@ -83,7 +83,6 @@ class RedditScraper():
             if file_ext is None:
                 self.log(
                     f'Unable do determine file type for {response.headers.get("content-type")}')
-                print(download_url)
                 continue
 
             target_file = os.path.join(

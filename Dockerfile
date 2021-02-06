@@ -14,7 +14,6 @@ RUN python -m pip install --no-cache-dir -U pip && \
     rm requirements.txt
 
 RUN mkdir -p /memes/
-RUN ls /
 
 COPY src/*.py ./
 ENTRYPOINT ["python", "./run.py"]
