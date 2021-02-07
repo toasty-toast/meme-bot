@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
 import os
+import time
+import threading
+
+import schedule
 
 from memebot import MemeBot
 from redditscraper import RedditScraper
@@ -26,10 +30,23 @@ def main():
         reddit_api_client_secret,
         unique_subreddits,
         meme_download_dir)
-    reddit_scraper.begin_scraping()
+
+    schedule_thread = threading.Thread(
+        target=run_scheduled_tasks,
+        args=(reddit_scraper,),
+        daemon=True)
+    schedule_thread.start()
 
     bot = MemeBot(meme_download_dir)
     bot.run(discord_bot_token)
+
+
+def run_scheduled_tasks(reddit_scraper):
+    schedule.every(1).hours.do(reddit_scraper.reprocess_memes)
+    schedule.run_all()
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 
 def get_env_or_error(env_var):

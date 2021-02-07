@@ -2,9 +2,7 @@ import datetime
 import os
 import requests
 import shutil
-import threading
 
-import schedule
 import praw
 
 
@@ -21,16 +19,7 @@ class RedditScraper():
             client_secret=self.client_secret,
             user_agent=RedditScraper.REDDIT_USER_AGENT)
 
-    def begin_scraping(self):
-        self.log('Scraper started')
-        schedule.every().hour.do(self.run_threaded, self.redownload_memes)
-        schedule.run_all()
-
-    def run_threaded(self, func):
-        thread = threading.Thread(target=func)
-        thread.start()
-
-    def redownload_memes(self):
+    def reprocess_memes(self):
         self.log('Beginning meme redownload')
 
         if not os.path.isdir(self.meme_download_dir):
