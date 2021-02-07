@@ -16,4 +16,4 @@ RUN python -m pip install --no-cache-dir -U pip && \
 RUN mkdir -p /memes/
 
 COPY src/*.py ./
-CMD /app/run.py
+ENTRYPOINT ["python", "./run.py"]
