@@ -1,5 +1,6 @@
 import datetime
 import os
+import pathlib
 import requests
 import shutil
 
@@ -20,7 +21,7 @@ class RedditScraper():
             user_agent=RedditScraper.REDDIT_USER_AGENT)
 
     def reprocess_memes(self):
-        self.log('Beginning meme redownload')
+        self.log('Beginning meme reprocessing')
 
         if not os.path.isdir(self.meme_download_dir):
             self.log(
@@ -33,7 +34,10 @@ class RedditScraper():
             except Exception as e:
                 self.log(f'Error while processing /r/{subreddit}: {e}')
 
-        self.log('Finished meme redownload')
+        self.log('Finished meme reprocessing')
+
+        files = list(pathlib.Path(self.meme_download_dir).rglob('*.*'))
+        self.log(f'Downloaded {len(files)} memes')
 
     def reprocess_subreddit(self, subreddit):
         download_dir = os.path.join(self.meme_download_dir, subreddit)
@@ -51,7 +55,7 @@ class RedditScraper():
                 return
 
         self.log(f'Processing submissions for /r/{subreddit}')
-        for submission in self.reddit.subreddit(subreddit).top('day', limit=10):
+        for submission in self.reddit.subreddit(subreddit).top('week', limit=50):
             if submission.is_self:
                 continue
 

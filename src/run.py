@@ -42,7 +42,7 @@ def main():
 
 
 def run_scheduled_tasks(reddit_scraper):
-    schedule.every(1).hours.do(reddit_scraper.reprocess_memes)
+    schedule.every(6).hours.do(reddit_scraper.reprocess_memes)
     schedule.run_all()
     while True:
         schedule.run_pending()
