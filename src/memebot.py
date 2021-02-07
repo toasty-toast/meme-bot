@@ -16,6 +16,12 @@ class MemeBot(discord.Client):
         super().__init__()
         self.log('Created Meme Bot')
 
+    async def on_ready(self):
+        activity = discord.Activity(
+            name='Dank Memes',
+            type=discord.ActivityType.watching)
+        await self.change_presence(activity=activity)
+
     async def on_message(self, message):
         if message.author == self.user:
             return
