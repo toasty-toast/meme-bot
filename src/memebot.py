@@ -9,7 +9,14 @@ import discord
 
 class MemeBot(discord.Client):
     VALID_CHANNELS = ['memes']
+    HELP_COMMAND_RE = re.compile(r'^\s*!help\s*$')
     MEME_COMMAND_RE = re.compile(r'^\s*!meme\s*$')
+    HELP_TEXT = '\n'.join([
+        'Available meme commands:',
+        '!help - Shows this list of commands',
+        '!meme - Responds with one of the internet\'s finest memes',
+        '!doman - Responds with a random video from the world famous playlist John Doman\'s Personal Picks'
+    ])
 
     def __init__(self, meme_download_dir):
         self.meme_download_dir = meme_download_dir
@@ -27,7 +34,10 @@ class MemeBot(discord.Client):
             return
         if message.channel.name not in MemeBot.VALID_CHANNELS:
             return
-        if MemeBot.MEME_COMMAND_RE.match(message.content) is not None:
+        if MemeBot.HELP_COMMAND_RE.match(message.content) is not None:
+            self.log(f'Got help request from {message.author.name}')
+            await message.channel.send(MemeBot.HELP_TEXT)
+        elif MemeBot.MEME_COMMAND_RE.match(message.content) is not None:
             self.log(f'Got meme request from {message.author.name}')
             meme_file = self.get_random_meme_file()
             if meme_file is None:
