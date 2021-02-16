@@ -29,6 +29,8 @@ class PersonalPicksScraper():
                 f'https://www.youtube.com/watch?v={v["id"]}' for v in playlist['entries']]
 
     def get_random_video_url(self):
+        if len(self.video_urls) == 0:
+            return None
         return random.choice(self.video_urls)
 
     def log(self, message):
