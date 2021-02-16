@@ -6,8 +6,9 @@ import threading
 
 import schedule
 
-from memebot import MemeBot
-from redditscraper import RedditScraper
+from meme_bot import MemeBot
+from reddit_scraper import RedditScraper
+from personal_picks_scraper import PersonalPicksScraper
 
 
 DISCORD_BOT_TOKEN_ENV = 'DISCORD_BOT_TOKEN'
@@ -15,6 +16,7 @@ REDDIT_API_CLIENT_ID_ENV = 'REDDIT_API_CLIENT_ID'
 REDDIT_API_CLIENT_SECRET_ENV = 'REDDIT_API_CLIENT_SECRET'
 SUBREDDIT_SCRAPE_LIST_ENV = 'SUBREDDIT_SCRAPE_LIST'
 MEME_DOWNLOAD_DIR_ENV = 'MEME_DOWNLOAD_DIR'
+PERSONAL_PICKS_PLAYLIST_URL_ENV = 'PERSONAL_PICKS_PLAYLIST_URL'
 
 
 def main():
@@ -23,6 +25,8 @@ def main():
     reddit_api_client_secret = get_env_or_error(REDDIT_API_CLIENT_SECRET_ENV)
     subreddit_scrape_list = get_env_or_error(SUBREDDIT_SCRAPE_LIST_ENV)
     meme_download_dir = get_env_or_error(MEME_DOWNLOAD_DIR_ENV)
+    personal_picks_playlist_url = get_env_or_error(
+        PERSONAL_PICKS_PLAYLIST_URL_ENV)
 
     unique_subreddits = list(set(subreddit_scrape_list.split(',')))
     reddit_scraper = RedditScraper(
@@ -31,18 +35,21 @@ def main():
         unique_subreddits,
         meme_download_dir)
 
+    personal_picks_scraper = PersonalPicksScraper(personal_picks_playlist_url)
+
     schedule_thread = threading.Thread(
         target=run_scheduled_tasks,
-        args=(reddit_scraper,),
+        args=(reddit_scraper, personal_picks_scraper),
         daemon=True)
     schedule_thread.start()
 
-    bot = MemeBot(meme_download_dir)
+    bot = MemeBot(meme_download_dir, reddit_scraper, personal_picks_scraper)
     bot.run(discord_bot_token)
 
 
-def run_scheduled_tasks(reddit_scraper):
+def run_scheduled_tasks(reddit_scraper, personal_picks_scraper):
     schedule.every(12).hours.do(reddit_scraper.reprocess_memes)
+    schedule.every(1).hours.do(personal_picks_scraper.reprocess_videos)
     schedule.run_all()
     while True:
         schedule.run_pending()

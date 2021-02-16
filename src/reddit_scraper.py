@@ -1,6 +1,7 @@
 import datetime
 import os
 import pathlib
+import random
 import requests
 import shutil
 
@@ -98,6 +99,14 @@ class RedditScraper():
         if mime_type.lower() == 'video/mp4':
             return 'mp4'
         return None
+
+    def get_random_meme_file(self):
+        if not os.path.isdir(self.meme_download_dir):
+            return None
+        files = list(pathlib.Path(self.meme_download_dir).rglob('*.*'))
+        if len(files) == 0:
+            return None
+        return random.choice(files)
 
     def log(self, message):
         print(f'[Reddit Scraper] [{datetime.datetime.now()}]: {message}')
