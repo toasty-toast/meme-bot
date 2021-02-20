@@ -20,6 +20,7 @@ PERSONAL_PICKS_PLAYLIST_URL_ENV = 'PERSONAL_PICKS_PLAYLIST_URL'
 
 
 def main():
+    """The main entrypoint for the meme bot program."""
     discord_bot_token = get_env_or_error(DISCORD_BOT_TOKEN_ENV)
     reddit_api_client_id = get_env_or_error(REDDIT_API_CLIENT_ID_ENV)
     reddit_api_client_secret = get_env_or_error(REDDIT_API_CLIENT_SECRET_ENV)
@@ -43,11 +44,14 @@ def main():
         daemon=True)
     schedule_thread.start()
 
-    bot = MemeBot(meme_download_dir, reddit_scraper, personal_picks_scraper)
+    bot = MemeBot(reddit_scraper, personal_picks_scraper)
     bot.run(discord_bot_token)
 
 
 def run_scheduled_tasks(reddit_scraper, personal_picks_scraper):
+    """
+    Runs the scheduled tasks for the program. This will block indefinitely.
+    """
     schedule.every(12).hours.do(reddit_scraper.reprocess_memes)
     schedule.every(1).hours.do(personal_picks_scraper.reprocess_videos)
     schedule.run_all()
@@ -57,6 +61,15 @@ def run_scheduled_tasks(reddit_scraper, personal_picks_scraper):
 
 
 def get_env_or_error(env_var):
+    """
+    Retrieves an environment variable and returns it, or exits the application if it is not found.
+
+    Parameters
+    ----------
+
+    env_var:
+        The name of the environment variable to get.
+    """
     var = os.environ.get(env_var)
     if var is None or var == '':
         print(f'Missing required environment variable: {env_var}')

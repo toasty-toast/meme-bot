@@ -8,6 +8,18 @@ import discord
 
 
 class MemeBot(discord.Client):
+    """
+    A discord bot that responds to various text commands with different memes.
+
+    Parameters
+    ----------
+
+    reddit_scraper:
+        The RedditScraper that provides access to the memes.
+    personal_picks_scraper:
+        The PersonalPicksScraper that provides access to the personal picks YouTube playlist.
+    """
+
     VALID_CHANNELS = ['memes']
     HELP_COMMAND_RE = re.compile(r'^\s*!help\s*$')
     MEME_COMMAND_RE = re.compile(r'^\s*!meme\s*$')
@@ -16,23 +28,24 @@ class MemeBot(discord.Client):
         'Available meme commands:',
         '!help - Shows this list of commands',
         '!meme - Responds with one of the internet\'s finest memes',
-        '!doman - Responds with a random video from the world famous playlist John Doman\'s Personal Picks'
+        '!doman - Responds with a random video from the world famous playlist Johnathan Doman\'s Personal Picks'
     ])
 
-    def __init__(self, meme_download_dir, reddit_scraper, personal_picks_scraper):
-        self.meme_download_dir = meme_download_dir
+    def __init__(self, reddit_scraper, personal_picks_scraper):
         self.reddit_scraper = reddit_scraper
         self.personal_picks_scraper = personal_picks_scraper
         super().__init__()
         self.log('Created Meme Bot')
 
     async def on_ready(self):
+        """Called when the bot is first readied."""
         activity = discord.Activity(
             name='Dank Memes',
             type=discord.ActivityType.watching)
         await self.change_presence(activity=activity)
 
     async def on_message(self, message):
+        """Called when a new message is sent in the Discord."""
         if message.author == self.user:
             return
         if message.channel.name not in MemeBot.VALID_CHANNELS:
@@ -61,4 +74,13 @@ class MemeBot(discord.Client):
                 await message.channel.send(video_url)
 
     def log(self, message):
+        """
+        Logs a message.
+
+        Parameters
+        ----------
+
+        message:
+            The message to log.
+        """
         print(f'[Meme Bot] [{datetime.datetime.now()}]: {message}')

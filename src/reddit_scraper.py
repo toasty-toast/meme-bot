@@ -9,6 +9,21 @@ import praw
 
 
 class RedditScraper():
+    """
+    Scrapes subreddits for the most popular memes, downloads them, and provides access to them.
+
+    Parameters
+    ----------
+
+    client_id:
+        The Client ID used to authenticate with the Reddit API.
+    client_secret:
+        The Client secret used to authenticate with the Reddit API.
+    subreddits:
+        The list of subreddits to get the memes from.
+    meme_download_dir:
+        The directory that should be used as a cache for the meme files.
+    """
     REDDIT_USER_AGENT = 'discord:toasty-toast-meme-bot:v1.0.0'
 
     def __init__(self, client_id, client_secret, subreddits, meme_download_dir):
@@ -22,6 +37,7 @@ class RedditScraper():
             user_agent=RedditScraper.REDDIT_USER_AGENT)
 
     def reprocess_memes(self):
+        """Reprocesses all memes, removing the existing files and dowloading the latest."""
         self.log('Beginning meme reprocessing')
 
         if not os.path.isdir(self.meme_download_dir):
@@ -41,6 +57,15 @@ class RedditScraper():
         self.log(f'Downloaded {len(files)} memes')
 
     def reprocess_subreddit(self, subreddit):
+        """
+        Reprocesses memes for a subreddit, removing all existing memes and downloading the latest and greatest.
+
+        Parameters
+        ----------
+
+        subreddit:
+            The name of the subreddit to reprocess memes for.
+        """
         download_dir = os.path.join(self.meme_download_dir, subreddit)
 
         if os.path.isdir(download_dir):
@@ -90,6 +115,15 @@ class RedditScraper():
                     file.write(block)
 
     def get_file_ext_from_mime_type(self, mime_type):
+        """
+        Gets the file extension associated with a mime type.
+
+        Parameters
+        ----------
+
+        mime_type:
+            The MIME type to get the file extension for.
+        """
         if mime_type.lower() == 'image/jpeg':
             return 'jpeg'
         if mime_type.lower() == 'image/png':
@@ -101,6 +135,7 @@ class RedditScraper():
         return None
 
     def get_random_meme_file(self):
+        """Returns the path for a random meme file."""
         if not os.path.isdir(self.meme_download_dir):
             return None
         files = list(pathlib.Path(self.meme_download_dir).rglob('*.*'))
@@ -109,4 +144,13 @@ class RedditScraper():
         return random.choice(files)
 
     def log(self, message):
+        """
+        Logs a message.
+
+        Parameters
+        ----------
+
+        message:
+            The message to log.
+        """
         print(f'[Reddit Scraper] [{datetime.datetime.now()}]: {message}')
