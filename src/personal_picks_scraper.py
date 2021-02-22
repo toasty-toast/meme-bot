@@ -23,7 +23,7 @@ class PersonalPicksScraper():
     def reprocess_videos(self):
         """Retrieves the list of videso in the playlsit and caches the links to each video."""
         self.log('Reprocessing Johnathan Doman\'s Personal Picks')
-        with youtube_dl.YoutubeDL({'logger': SilentLogger()}) as ydl:
+        with youtube_dl.YoutubeDL({'logger': PersonalPicksScraper.SilentLogger()}) as ydl:
             playlist = ydl.extract_info(self.playlist_url, download=False, )
             self.video_urls = [
                 f'https://www.youtube.com/watch?v={v["id"]}' for v in playlist['entries']]
