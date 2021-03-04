@@ -23,10 +23,13 @@ class PersonalPicksScraper():
     def reprocess_videos(self):
         """Retrieves the list of videso in the playlsit and caches the links to each video."""
         self.log('Reprocessing Johnathan Doman\'s Personal Picks')
-        with youtube_dl.YoutubeDL({'logger': PersonalPicksScraper.SilentLogger()}) as ydl:
-            playlist = ydl.extract_info(self.playlist_url, download=False, )
-            self.video_urls = [
-                f'https://www.youtube.com/watch?v={v["id"]}' for v in playlist['entries']]
+        try:
+            with youtube_dl.YoutubeDL({'logger': PersonalPicksScraper.SilentLogger()}) as ydl:
+                playlist = ydl.extract_info(self.playlist_url, download=False, )
+                self.video_urls = [
+                    f'https://www.youtube.com/watch?v={v["id"]}' for v in playlist['entries']]
+        except Exception as e:
+            self.log(f'Error while reprocessing videos: {e}')
 
     def get_random_video_url(self):
         """Returns a random URL from the personal picks playlist."""

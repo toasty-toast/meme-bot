@@ -39,22 +39,24 @@ class RedditScraper():
     def reprocess_memes(self):
         """Reprocesses all memes, removing the existing files and dowloading the latest."""
         self.log('Beginning meme reprocessing')
+        try:
+            if not os.path.isdir(self.meme_download_dir):
+                self.log(
+                    f'Meme download "{self.meme_download_dir}" directory does not exist')
+                return
 
-        if not os.path.isdir(self.meme_download_dir):
-            self.log(
-                f'Meme download "{self.meme_download_dir}" directory does not exist')
-            return
+            for subreddit in self.subreddits:
+                try:
+                    self.reprocess_subreddit(subreddit)
+                except Exception as e:
+                    self.log(f'Error while processing /r/{subreddit}: {e}')
 
-        for subreddit in self.subreddits:
-            try:
-                self.reprocess_subreddit(subreddit)
-            except Exception as e:
-                self.log(f'Error while processing /r/{subreddit}: {e}')
+            self.log('Finished meme reprocessing')
 
-        self.log('Finished meme reprocessing')
-
-        files = list(pathlib.Path(self.meme_download_dir).rglob('*.*'))
-        self.log(f'Downloaded {len(files)} memes')
+            files = list(pathlib.Path(self.meme_download_dir).rglob('*.*'))
+            self.log(f'Downloaded {len(files)} memes')
+        except Exception as e:
+            self.log(f'Error while reprocessing memes: {e}')
 
     def reprocess_subreddit(self, subreddit):
         """
