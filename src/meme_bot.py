@@ -20,7 +20,6 @@ class MemeBot(discord.Client):
         The PersonalPicksScraper that provides access to the personal picks YouTube playlist.
     """
 
-    VALID_CHANNELS = ['memes']
     HELP_COMMAND_RE = re.compile(r'^\s*!help\s*$')
     MEME_COMMAND_RE = re.compile(r'^\s*!meme\s*$')
     DOMAN_COMMAND_RE = re.compile(r'^\s*!doman\s*$')
@@ -47,8 +46,6 @@ class MemeBot(discord.Client):
     async def on_message(self, message):
         """Called when a new message is sent in the Discord."""
         if message.author == self.user:
-            return
-        if message.channel.name not in MemeBot.VALID_CHANNELS:
             return
         if MemeBot.HELP_COMMAND_RE.match(message.content) is not None:
             self.log(f'Got help request from {message.author.name}')
