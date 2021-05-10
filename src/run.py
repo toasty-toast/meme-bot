@@ -52,8 +52,8 @@ def run_scheduled_tasks(reddit_scraper, personal_picks_scraper):
     """
     Runs the scheduled tasks for the program. This will block indefinitely.
     """
-    schedule.every(12).hours.do(reddit_scraper.reprocess_memes)
-    schedule.every(1).hours.do(personal_picks_scraper.reprocess_videos)
+    schedule.every(1).days.do(reddit_scraper.reprocess_memes)
+    schedule.every(1).days.do(personal_picks_scraper.reprocess_videos)
     schedule.run_all()
     while True:
         schedule.run_pending()
